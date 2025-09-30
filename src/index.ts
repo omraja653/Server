@@ -20,7 +20,7 @@ const app = express();
 app.use(bodyParser.json(), cors({ origin: "*" }));
 
 // Use Render's dynamic port if available
-const port = process.env.PORT ? parseInt(process.env.PORT) : 5101;
+const port = process.env.PORT ? parseInt(process.env.PORT) : 5100;
 
 app.get("/status", (req: Request, res: Response) => {
   const status = { status: "UP", matchesRunning: MatchController.getInstance().getMatchCount() };
