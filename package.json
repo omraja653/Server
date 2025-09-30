@@ -1,16 +1,15 @@
 {
-  "name": "spectra-server",
+  "name": "drawfive-server",
   "version": "0.2.43",
   "author": {
-    "name": "Purple Shark UG (haftungsbeschränkt)",
-    "url": "https://valospectra.com"
+    "name": "OM RAJA",
+    "url": "https://drawfive.in"
   },
-  "description": "Server that ingests data from the Spectra Client for processing",
+  "description": "Server for DrawFive that ingests data from the client for processing",
   "private": true,
   "main": "dist/index.js",
   "scripts": {
-    "start": "npm run dev",
-    "start_single": "ts-node ./src/index.ts",
+    "start": "node dist/index.js",
     "dev": "nodemon ./src/index.ts --ignore replay/",
     "build": "tsc",
     "lint": "eslint src/",

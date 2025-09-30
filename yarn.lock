@@ -1369,6 +1369,46 @@ __metadata:
   languageName: node
   linkType: hard
 
+"drawfive-server@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "drawfive-server@workspace:."
+  dependencies:
+    "@eslint/js": "npm:^9.23.0"
+    "@types/cors": "npm:^2"
+    "@types/express": "npm:^4.17.21"
+    "@types/node": "npm:^22.14.0"
+    "@types/semver": "npm:^7.7.0"
+    body-parser: "npm:^2.2.0"
+    bufferutil: "npm:^4.0.9"
+    cors: "npm:^2.8.5"
+    dotenv: "npm:^16.4.7"
+    eslint: "npm:^9.23.0"
+    eslint-config-prettier: "npm:^10.1.1"
+    eventsource: "npm:^2.0.2"
+    express: "npm:^4.21.2"
+    globals: "npm:^15.15.0"
+    lodash: "npm:^4.17.21"
+    nodemon: "npm:^3.1.9"
+    pkginfo: "npm:^0.4.1"
+    prettier: "npm:3.5.3"
+    rimraf: "npm:^6.0.1"
+    semver: "npm:^7.7.1"
+    socket.io: "npm:^4.8.1"
+    socket.io-client: "npm:^4.8.1"
+    ts-loader: "npm:^9.5.2"
+    ts-node: "npm:^10.9.2"
+    typescript: "npm:^5.8.2"
+    typescript-eslint: "npm:^8.29.0"
+    utf-8-validate: "npm:^6.0.5"
+    webpack: "npm:^5.98.0"
+  dependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  languageName: unknown
+  linkType: soft
+
 "dunder-proto@npm:^1.0.1":
   version: 1.0.1
   resolution: "dunder-proto@npm:1.0.1"
@@ -3472,46 +3512,6 @@ __metadata:
   checksum: 10c0/dc0cf3768fe23c345ea8760487f8c97ef6fca8a73c83cd7c9bf2fde8bc2c34adb9c0824d6feb14bc4f9e37fb522e18af621543f1289038a66ac7586da29aa7dc
   languageName: node
   linkType: hard
-
-"spectra-server@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "spectra-server@workspace:."
-  dependencies:
-    "@eslint/js": "npm:^9.23.0"
-    "@types/cors": "npm:^2"
-    "@types/express": "npm:^4.17.21"
-    "@types/node": "npm:^22.14.0"
-    "@types/semver": "npm:^7.7.0"
-    body-parser: "npm:^2.2.0"
-    bufferutil: "npm:^4.0.9"
-    cors: "npm:^2.8.5"
-    dotenv: "npm:^16.4.7"
-    eslint: "npm:^9.23.0"
-    eslint-config-prettier: "npm:^10.1.1"
-    eventsource: "npm:^2.0.2"
-    express: "npm:^4.21.2"
-    globals: "npm:^15.15.0"
-    lodash: "npm:^4.17.21"
-    nodemon: "npm:^3.1.9"
-    pkginfo: "npm:^0.4.1"
-    prettier: "npm:3.5.3"
-    rimraf: "npm:^6.0.1"
-    semver: "npm:^7.7.1"
-    socket.io: "npm:^4.8.1"
-    socket.io-client: "npm:^4.8.1"
-    ts-loader: "npm:^9.5.2"
-    ts-node: "npm:^10.9.2"
-    typescript: "npm:^5.8.2"
-    typescript-eslint: "npm:^8.29.0"
-    utf-8-validate: "npm:^6.0.5"
-    webpack: "npm:^5.98.0"
-  dependenciesMeta:
-    bufferutil:
-      optional: true
-    utf-8-validate:
-      optional: true
-  languageName: unknown
-  linkType: soft
 
 "sprintf-js@npm:^1.1.3":
   version: 1.1.3
