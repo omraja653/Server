@@ -9,23 +9,21 @@ import { readFileSync, existsSync } from "fs";
 import { createServer as createSecureServer } from "https";
 import { DatabaseConnector } from "./connector/databaseConnector";
 import { handleDiscordAuth, handlePackageRequest } from "./util/SupportService";
-require("dotenv").config();
 
+require("dotenv").config();
 const Log = logging("Status");
+
 const websocketIncoming = new WebsocketIncoming();
 const previewHandler = PreviewHandler.getInstance(websocketIncoming);
 
 const app = express();
 app.use(bodyParser.json(), cors({ origin: "*" }));
 
-// Use dynamic port from Render, fallback to 5101 for local testing
+// Use Render's dynamic port if available
 const port = process.env.PORT ? parseInt(process.env.PORT) : 5101;
 
 app.get("/status", (req: Request, res: Response) => {
-  const status = {
-    status: "UP",
-    matchesRunning: MatchController.getInstance().getMatchCount(),
-  };
+  const status = { status: "UP", matchesRunning: MatchController.getInstance().getMatchCount() };
   res.header("Access-Control-Allow-Origin", "*").json(status);
 });
 
@@ -77,18 +75,29 @@ if (process.env.USE_BACKEND === "true") {
   });
 }
 
-// Determine if TLS keys exist
-const useTLS = process.env.INSECURE !== "true" && process.env.SERVER_KEY && process.env.SERVER_CERT;
-
-if (useTLS && existsSync(process.env.SERVER_KEY) && existsSync(process.env.SERVER_CERT)) {
-  const key = readFileSync(process.env.SERVER_KEY);
-  const cert = readFileSync(process.env.SERVER_CERT);
-  const server = createSecureServer({ key, cert }, app);
-  server.listen(port, () => {
-    Log.info(`Extras available on port ${port} (HTTPS)`);
+// TLS / HTTPS setup
+if (process.env.INSECURE === "true") {
+  app.listen(port, () => {
+    Log.info(`Extras available on port ${port}`);
   });
 } else {
-  app.listen(port, () => {
-    Log.info(`Extras available on port ${port} (HTTP)`);
+  const keyPath = process.env.SERVER_KEY;
+  const certPath = process.env.SERVER_CERT;
+
+  if (!keyPath || !certPath) {
+    Log.error("SERVER_KEY and SERVER_CERT environment variables must be set");
+    process.exit(1);
+  }
+  if (!existsSync(keyPath) || !existsSync(certPath)) {
+    Log.error("SERVER_KEY or SERVER_CERT file does not exist at the specified path");
+    process.exit(1);
+  }
+
+  const key = readFileSync(keyPath);
+  const cert = readFileSync(certPath);
+  const creds = { key, cert };
+  const server = createSecureServer(creds, app);
+  server.listen(port, () => {
+    Log.info(`Extras available on port ${port} (TLS)`);
   });
 }
