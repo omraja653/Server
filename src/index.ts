@@ -5,24 +5,22 @@ import { WebsocketIncoming } from "./connector/websocketIncoming";
 import { MatchController } from "./controller/MatchController";
 import logging from "./util/Logging";
 import { PreviewHandler } from "./util/previews/PreviewHandler";
-import { readFileSync } from "fs";
+import { readFileSync, existsSync } from "fs";
 import { createServer as createSecureServer } from "https";
 import { DatabaseConnector } from "./connector/databaseConnector";
 import { handleDiscordAuth, handlePackageRequest } from "./util/SupportService";
-
 require("dotenv").config();
-const Log = logging("Status");
 
+const Log = logging("Status");
 const websocketIncoming = new WebsocketIncoming();
 const previewHandler = PreviewHandler.getInstance(websocketIncoming);
 
 const app = express();
 app.use(bodyParser.json(), cors({ origin: "*" }));
 
-// Use environment PORT if available, otherwise fallback to 5101
+// Use dynamic port from Render, fallback to 5101 for local testing
 const port = process.env.PORT ? parseInt(process.env.PORT) : 5101;
 
-// Status endpoint
 app.get("/status", (req: Request, res: Response) => {
   const status = {
     status: "UP",
@@ -31,7 +29,6 @@ app.get("/status", (req: Request, res: Response) => {
   res.header("Access-Control-Allow-Origin", "*").json(status);
 });
 
-// Preview endpoints
 app.put("/createPreview", async (req: Request, res: Response) => {
   await previewHandler.handlePreviewCreation(req, res);
 });
@@ -39,20 +36,16 @@ app.put("/createPreview", async (req: Request, res: Response) => {
 app.get("/preview/:previewCode", async (req: Request, res: Response) => {
   const previewCode = req.params.previewCode;
   Log.info(`Received request for preview with code: ${previewCode}`);
-
   if (!previewCode || previewCode.length !== 6) {
     return res.status(400).json({ error: "Invalid preview code format" });
   }
-
   const previewMatch = previewHandler.getPreview(previewCode);
   if (!previewMatch) {
     return res.status(404).json({ error: "Preview not found" });
   }
-
   res.status(200).json(previewMatch);
 });
 
-// Key validation endpoint
 app.get("/getOrgForKey", async (req, res) => {
   const key = req.query.key;
   if (!key || typeof key !== "string") {
@@ -75,30 +68,27 @@ app.get("/getOrgForKey", async (req, res) => {
   res.status(401).header("Access-Control-Allow-Origin", "*").send("401 Unauthorized");
 });
 
-// Optional backend endpoints
 if (process.env.USE_BACKEND === "true") {
-  app.get("/getSupportPackages", async (req, res) => handlePackageRequest(res));
-  app.get("/client/oauth-callback", async (req, res) => handleDiscordAuth(req, res));
+  app.get("/getSupportPackages", async (req, res) => {
+    handlePackageRequest(res);
+  });
+  app.get("/client/oauth-callback", async (req, res) => {
+    handleDiscordAuth(req, res);
+  });
 }
 
-// Start server
-if (process.env.INSECURE === "true") {
-  // HTTP
-  app.listen(port, () => {
-    Log.info(`Server running in INSECURE mode on port ${port}`);
-  });
-} else {
-  // HTTPS
-  if (!process.env.SERVER_KEY || !process.env.SERVER_CERT) {
-    Log.error("SERVER_KEY or SERVER_CERT environment variable missing!");
-    process.exit(1);
-  }
+// Determine if TLS keys exist
+const useTLS = process.env.INSECURE !== "true" && process.env.SERVER_KEY && process.env.SERVER_CERT;
 
+if (useTLS && existsSync(process.env.SERVER_KEY) && existsSync(process.env.SERVER_CERT)) {
   const key = readFileSync(process.env.SERVER_KEY);
   const cert = readFileSync(process.env.SERVER_CERT);
   const server = createSecureServer({ key, cert }, app);
-
   server.listen(port, () => {
-    Log.info(`Server running with TLS on port ${port}`);
+    Log.info(`Extras available on port ${port} (HTTPS)`);
+  });
+} else {
+  app.listen(port, () => {
+    Log.info(`Extras available on port ${port} (HTTP)`);
   });
 }
